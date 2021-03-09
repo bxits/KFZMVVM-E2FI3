@@ -72,7 +72,7 @@ namespace BusinessLogic.Models
             Connection.DeleteKFZ(kfz);
         }
 
-        private void CheckForNewKFZ()
+        public void RefreshKFZs()
         {
             while (true)
             {
@@ -85,7 +85,7 @@ namespace BusinessLogic.Models
                     if (!this.KFZListe.Contains(k))
                     {
                         //kfzneu.Add(k);
-                        KFZNew(k);
+                        KFZNew(k); //Event feuern.
 
                         //KFZStatusEventArgs args = new KFZStatusEventArgs(KFZStatus.NewKFZ, k);
 
@@ -118,6 +118,8 @@ namespace BusinessLogic.Models
 
                             //notifyStatusChanged(args);
                         }
+
+                        //alle anderen Props auch checken...
 
                     }
                 }

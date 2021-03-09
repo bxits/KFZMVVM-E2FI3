@@ -19,6 +19,7 @@ namespace WpfApplication1.ViewModels
         private ICommand _deleteSelectedCommand;
         private ICommand _newCommand;
         private ICommand _datenHolenCommand;
+        private ICommand _refreshCommand;
 
         private void notifyPropertyChanged(string propname)
         {
@@ -37,6 +38,24 @@ namespace WpfApplication1.ViewModels
             _kfzm = new KFZCollectionModel();
 
             _kfzm.KFZDataArrived += _kfzm_KFZDataArrived;
+            _kfzm.KFZChanged += _kfzm_KFZChanged;
+            _kfzm.KFZDeleted += _kfzm_KFZDeleted;
+            _kfzm.KFZNew += _kfzm_KFZNew;
+        }
+
+        private void _kfzm_KFZNew(KFZ kfz)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void _kfzm_KFZDeleted(KFZ kfz)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void _kfzm_KFZChanged(KFZ kfz)
+        {
+            throw new NotImplementedException();
         }
 
         private void _kfzm_KFZDataArrived(List<KFZ> kfzs)
@@ -151,6 +170,19 @@ namespace WpfApplication1.ViewModels
         private void HoleDaten()
         {
             _kfzm.GetAllKfz();
+        }
+
+        public ICommand RefreshCommand
+        {
+            get
+            {
+                return _refreshCommand = new RelayCommand(c => RefreshKFZData());
+            }
+        }
+
+        private void RefreshKFZData()
+        {
+            _kfzm.RefreshKFZs();
         }
 
         #endregion
