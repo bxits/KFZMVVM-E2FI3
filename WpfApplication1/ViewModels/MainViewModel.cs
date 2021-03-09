@@ -45,7 +45,9 @@ namespace WpfApplication1.ViewModels
 
         private void _kfzm_KFZNew(KFZ kfz)
         {
-            throw new NotImplementedException();
+            KFZDisplay kfzd = new KFZDisplay(kfz);
+            KFZObservableCollection.Add(kfzd);
+            //notifyPropertyChanged("KFZObservableCollection"); //Macht ObservableColl selber?!??!!?
         }
 
         private void _kfzm_KFZDeleted(KFZ kfz)

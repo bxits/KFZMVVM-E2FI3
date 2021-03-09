@@ -19,21 +19,21 @@ namespace BusinessLogic.Models
         public event KFZDeletedEventHandler KFZDeleted;
         public event KFZNewEventHandler KFZNew;
 
-        public List<KFZ> KFZListe = new List<KFZ>();        
+        private List<KFZ> _kFZListe = new List<KFZ>();
 
-        
+
         public KFZCollectionModel()
         {
             //Tür auf! Für das Event registrieren.
             Connection.KfzListeReady += Connection_KfzListeReady;
-            
+
         }
 
         private void Connection_KfzListeReady(List<KFZ> kfzs)
         {
-            KFZListe = kfzs;
+            _kFZListe = kfzs;
 
-            KFZDataArrived(KFZListe);
+            KFZDataArrived(_kFZListe);
         }
 
         public void GetAllKfz()
@@ -74,63 +74,51 @@ namespace BusinessLogic.Models
 
         public void RefreshKFZs()
         {
-            while (true)
+            List<KFZ> neueListeAusDB = Connection.GetKfzList();
+            //List<KFZ> kfzneu = new List<KFZ>();
+            List<KFZ> kfznichtmehrdrin = new List<KFZ>();
+
+            foreach (KFZ k in neueListeAusDB)
             {
-                List<KFZ> tmp = Connection.GetKfzList();
-                List<KFZ> kfzneu = new List<KFZ>();
-                List<KFZ> kfznichtmehrdrin = new List<KFZ>();
-
-                foreach (KFZ k in tmp)
+                if (!_kFZListe.Contains(k))
                 {
-                    if (!this.KFZListe.Contains(k))
-                    {
-                        //kfzneu.Add(k);
+                    _kFZListe.Add(k);
+                    if (KFZNew != null)
                         KFZNew(k); //Event feuern.
-
-                        //KFZStatusEventArgs args = new KFZStatusEventArgs(KFZStatus.NewKFZ, k);
-
-                        //notifyStatusChanged(args);
-                    }
                 }
+            }
 
-                foreach (KFZ k in this.KFZListe)
+            foreach (KFZ k in _kFZListe)
+            {
+                if (!neueListeAusDB.Contains(k))
                 {
-                    if (!tmp.Contains(k))
-                    {
-                        //kfznichtmehrdrin.Add(k);
+                    //KFZ aus Liste entfernen
+                    int idx = _kFZListe.IndexOf(k);
+                    _kFZListe.RemoveAt(idx);
+
+                    if (KFZDeleted != null)
                         KFZDeleted(k);
-                        //KFZStatusEventArgs args = new KFZStatusEventArgs(KFZStatus.RemovedKFZ, k);
-
-                        //notifyStatusChanged(args);
-                    }
                 }
+            }
 
-                foreach (KFZ k in this.KFZListe)
+            foreach (KFZ k in _kFZListe)
+            {
+                if (neueListeAusDB.Contains(k))
                 {
-                    if (tmp.Contains(k))
+                    int i = neueListeAusDB.IndexOf(k);
+
+                    if (k.Typ != neueListeAusDB[i].Typ)
                     {
-                        int i = tmp.IndexOf(k);
-
-                        if (k.Typ != tmp[i].Typ)
-                        {
+                        if (KFZChanged != null)
                             KFZChanged(k);
-                            //KFZStatusEventArgs args = new KFZStatusEventArgs(KFZStatus.ChangedKFZ, tmp[i]);
-
-                            //notifyStatusChanged(args);
-                        }
-
-                        //alle anderen Props auch checken...
-
                     }
+
+                    //alle anderen Props auch checken...
+
                 }
-
-
-                //this.KFZListe.AddRange(kfzneu);
-
-                //this.KFZListe = KFZListe.Except(kfznichtmehrdrin).ToList();
-
-               
             }
 
         }
+
+    }
 }
