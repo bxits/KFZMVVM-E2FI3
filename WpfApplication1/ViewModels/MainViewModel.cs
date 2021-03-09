@@ -34,15 +34,16 @@ namespace WpfApplication1.ViewModels
 
         public MainViewModel()
         {
-
+            _kfzm = new KFZCollectionModel();
 
             _kfzm.KFZDataArrived += _kfzm_KFZDataArrived;
-
-            _kfzm = new KFZCollectionModel();
         }
 
         private void _kfzm_KFZDataArrived(List<KFZ> kfzs)
         {
+            //Wenn Daten angekommen sind, dann erstmal die vorhandne Liste leeren...
+            KFZObservableCollection.Clear();
+
             foreach (KFZ kfz in kfzs)
             {
                 KFZDisplay kfzvm = new KFZDisplay(kfz);

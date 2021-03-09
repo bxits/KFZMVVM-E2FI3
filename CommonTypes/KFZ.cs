@@ -22,17 +22,28 @@ namespace CommonTypes
         public int Leistung;
         public string Typ;
 
-        public KFZ()
-        {
-
-        }
-
-        
         public override string ToString()
         {
             return string.Format("{0} ({1})", this.Kennzeichen, this.Typ);
         }
 
-        
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            KFZ objAsPart = obj as KFZ;
+            if (objAsPart == null) return false;
+            else return Equals(objAsPart);
+        }
+
+        public override int GetHashCode()
+        {
+            return Kennzeichen.GetHashCode();
+        }
+
+        public bool Equals(KFZ k)
+        {
+            if (k.Kennzeichen != this.Kennzeichen) return false;
+            return this.Kennzeichen.Equals(k.Kennzeichen);
+        }
     }
 }

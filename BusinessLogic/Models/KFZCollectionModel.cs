@@ -15,19 +15,17 @@ namespace BusinessLogic.Models
     {
         //Event nach außen publizieren.
         public event KFZDataArrivedEventHandler KFZDataArrived;
+        public event KFZChangedEventHandler KFZChanged;
+        public event KFZDeletedEventHandler KFZDeleted;
+        public event KFZNewEventHandler KFZNew;
 
         public List<KFZ> KFZListe = new List<KFZ>();        
 
         
         public KFZCollectionModel()
         {
-            //Tür auf! Füs das Event registrieren.
+            //Tür auf! Für das Event registrieren.
             Connection.KfzListeReady += Connection_KfzListeReady;
-
-            if(Connection.IsConnected)
-            {
-                GetAllKfz();
-            }
             
         }
 
@@ -74,12 +72,63 @@ namespace BusinessLogic.Models
             Connection.DeleteKFZ(kfz);
         }
 
-        #region Private methods
+        private void CheckForNewKFZ()
+        {
+            while (true)
+            {
+                List<KFZ> tmp = Connection.GetKfzList();
+                List<KFZ> kfzneu = new List<KFZ>();
+                List<KFZ> kfznichtmehrdrin = new List<KFZ>();
 
-        
+                foreach (KFZ k in tmp)
+                {
+                    if (!this.KFZListe.Contains(k))
+                    {
+                        //kfzneu.Add(k);
+                        KFZNew(k);
 
-        
-        #endregion
+                        //KFZStatusEventArgs args = new KFZStatusEventArgs(KFZStatus.NewKFZ, k);
 
-    }
+                        //notifyStatusChanged(args);
+                    }
+                }
+
+                foreach (KFZ k in this.KFZListe)
+                {
+                    if (!tmp.Contains(k))
+                    {
+                        //kfznichtmehrdrin.Add(k);
+                        KFZDeleted(k);
+                        //KFZStatusEventArgs args = new KFZStatusEventArgs(KFZStatus.RemovedKFZ, k);
+
+                        //notifyStatusChanged(args);
+                    }
+                }
+
+                foreach (KFZ k in this.KFZListe)
+                {
+                    if (tmp.Contains(k))
+                    {
+                        int i = tmp.IndexOf(k);
+
+                        if (k.Typ != tmp[i].Typ)
+                        {
+                            KFZChanged(k);
+                            //KFZStatusEventArgs args = new KFZStatusEventArgs(KFZStatus.ChangedKFZ, tmp[i]);
+
+                            //notifyStatusChanged(args);
+                        }
+
+                    }
+                }
+
+
+                //this.KFZListe.AddRange(kfzneu);
+
+                //this.KFZListe = KFZListe.Except(kfznichtmehrdrin).ToList();
+
+               
+            }
+
+        }
 }
