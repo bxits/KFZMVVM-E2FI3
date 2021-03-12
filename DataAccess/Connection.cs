@@ -41,7 +41,7 @@ namespace DataAccess
 
             string sql = "SELECT * FROM kfz;";
 
-            DataTable t = Connection.Adapter.Adapter.GetDataTable(sql);
+            DataTable t = Connection.Adapter.Adapter.GetDataTable(sql); //DB-Zugriff (kann dauern)
 
             foreach (DataRow r in t.Rows)
             {

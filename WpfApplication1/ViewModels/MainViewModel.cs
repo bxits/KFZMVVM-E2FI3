@@ -9,6 +9,7 @@ using System.Windows.Input;
 using CommonTypes;
 using BusinessLogic.Models;
 using CommandHelper;
+using System.Windows;
 
 namespace WpfApplication1.ViewModels
 {
@@ -19,7 +20,7 @@ namespace WpfApplication1.ViewModels
         private ICommand _deleteSelectedCommand;
         private ICommand _newCommand;
         private ICommand _datenHolenCommand;
-        private ICommand _refreshCommand;
+        private ICommand _startAutoRefreshCommand;
 
         private void notifyPropertyChanged(string propname)
         {
@@ -43,11 +44,15 @@ namespace WpfApplication1.ViewModels
             _kfzm.KFZNew += _kfzm_KFZNew;
         }
 
-        private void _kfzm_KFZNew(KFZ kfz)
+        private void _kfzm_KFZNew(KFZ kfz) //Aufruf durch "blauen" Workerthread.
         {
-            KFZDisplay kfzd = new KFZDisplay(kfz);
-            KFZObservableCollection.Add(kfzd);
-            //notifyPropertyChanged("KFZObservableCollection"); //Macht ObservableColl selber?!??!!?
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                KFZDisplay kfzd = new KFZDisplay(kfz);
+                KFZObservableCollection.Add(kfzd);
+            },
+            System.Windows.Threading.DispatcherPriority.Normal);
+            
         }
 
         private void _kfzm_KFZDeleted(KFZ kfz)
@@ -174,17 +179,18 @@ namespace WpfApplication1.ViewModels
             _kfzm.GetAllKfz();
         }
 
-        public ICommand RefreshCommand
+        public ICommand StartAutoRefreshCommand
         {
             get
             {
-                return _refreshCommand = new RelayCommand(c => RefreshKFZData());
+                return _startAutoRefreshCommand = new RelayCommand(c => StartAutoRefreshKFZData());
             }
         }
 
-        private void RefreshKFZData()
+        private void StartAutoRefreshKFZData()
         {
-            _kfzm.RefreshKFZs();
+            _kfzm.StartAutoRefreshThread();
+            //_kfzm.RefreshKFZs();
         }
 
         #endregion

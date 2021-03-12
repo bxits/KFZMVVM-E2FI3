@@ -45,7 +45,7 @@
             <Button Content="Ausgewählte löschen" Command="{Binding DeleteSelectedCommand}"></Button>
             <Button Content="Neu" Command="{Binding NewKfzCommand}"></Button>
             <Button Content="Daten holen" Command="{Binding DatenHolenCommand}"></Button>
-            <Button Content="Refresh" Command="{Binding RefreshCommand}"></Button>
+            <Button Content="Start Auto-Refresh" Command="{Binding StartAutoRefreshCommand}"></Button>
         </StackPanel>
 
        

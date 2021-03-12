@@ -20,7 +20,7 @@ namespace BusinessLogic.Models
         public event KFZNewEventHandler KFZNew;
 
         private List<KFZ> _kFZListe = new List<KFZ>();
-
+        BackgroundWorker _bwt;
 
         public KFZCollectionModel()
         {
@@ -72,52 +72,70 @@ namespace BusinessLogic.Models
             Connection.DeleteKFZ(kfz);
         }
 
-        public void RefreshKFZs()
+        public void StartAutoRefreshThread()
+        {
+            //async / await / Task... geht auch
+
+            //BackgroundWorker
+            _bwt = new BackgroundWorker();
+            _bwt.DoWork += _bwt_RefreshKFZs;
+            _bwt.WorkerSupportsCancellation = true;
+           
+            _bwt.RunWorkerAsync();
+        }
+
+        
+        //Wird vom neuen Thread (_bwt) aufgerufen.
+        public void _bwt_RefreshKFZs(object sender, DoWorkEventArgs e) //Jetzt die Thread-Methode (blauer BwThread)
         {
             List<KFZ> neueListeAusDB = Connection.GetKfzList();
             //List<KFZ> kfzneu = new List<KFZ>();
             List<KFZ> kfznichtmehrdrin = new List<KFZ>();
 
-            foreach (KFZ k in neueListeAusDB)
+            while (true) //Endlosschleife des Threads
             {
-                if (!_kFZListe.Contains(k))
+                foreach (KFZ k in neueListeAusDB)
                 {
-                    _kFZListe.Add(k);
-                    if (KFZNew != null)
-                        KFZNew(k); //Event feuern.
-                }
-            }
-
-            foreach (KFZ k in _kFZListe)
-            {
-                if (!neueListeAusDB.Contains(k))
-                {
-                    //KFZ aus Liste entfernen
-                    int idx = _kFZListe.IndexOf(k);
-                    _kFZListe.RemoveAt(idx);
-
-                    if (KFZDeleted != null)
-                        KFZDeleted(k);
-                }
-            }
-
-            foreach (KFZ k in _kFZListe)
-            {
-                if (neueListeAusDB.Contains(k))
-                {
-                    int i = neueListeAusDB.IndexOf(k);
-
-                    if (k.Typ != neueListeAusDB[i].Typ)
+                    if (!_kFZListe.Contains(k))
                     {
-                        if (KFZChanged != null)
-                            KFZChanged(k);
+                        _kFZListe.Add(k);
+                        if (KFZNew != null)
+                            KFZNew(k); //Event feuern.
                     }
-
-                    //alle anderen Props auch checken...
-
                 }
-            }
 
+                foreach (KFZ k in _kFZListe)
+                {
+                    if (!neueListeAusDB.Contains(k))
+                    {
+                        //KFZ aus Liste entfernen
+                        int idx = _kFZListe.IndexOf(k);
+                        _kFZListe.RemoveAt(idx);
+
+                        if (KFZDeleted != null)
+                            KFZDeleted(k);
+                    }
+                }
+
+                foreach (KFZ k in _kFZListe)
+                {
+                    if (neueListeAusDB.Contains(k))
+                    {
+                        int i = neueListeAusDB.IndexOf(k);
+
+                        if (k.Typ != neueListeAusDB[i].Typ)
+                        {
+                            if (KFZChanged != null)
+                                KFZChanged(k);
+                        }
+
+                        //alle anderen Props auch checken...
+
+                    }
+                }
+
+                System.Threading.Thread.Sleep(5000);
+            }
         }
 
     }
