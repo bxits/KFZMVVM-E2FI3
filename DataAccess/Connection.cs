@@ -41,21 +41,15 @@ namespace DataAccess
 
             string sql = "SELECT * FROM kfz;";
 
-            DataTable t = Connection.Adapter.Adapter.GetDataTable(sql);
+            DataTable t = Connection.Adapter.Adapter.GetDataTable(sql); //DB-Zugriff (kann dauern)
 
             foreach (DataRow r in t.Rows)
             {
                 KFZListe.Add(new DA_KFZ(r));
             }
 
-            //Event feuern, wenn sich jemand dafür registriert hat.
-            //Wenn sich niemand mit ...+=... registriert hat, dann ist
-            //KfzListeReady = null.
-            if (KfzListeReady != null)
-                KfzListeReady(KFZListe);
-
-            //return KFZListe;
-            return null;
+            return KFZListe;
+            
         }
 
         //TODO: Einfügen eines KFZ in die Datenbank

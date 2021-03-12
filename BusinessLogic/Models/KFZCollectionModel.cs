@@ -15,27 +15,25 @@ namespace BusinessLogic.Models
     {
         //Event nach außen publizieren.
         public event KFZDataArrivedEventHandler KFZDataArrived;
+        public event KFZChangedEventHandler KFZChanged;
+        public event KFZDeletedEventHandler KFZDeleted;
+        public event KFZNewEventHandler KFZNew;
 
-        public List<KFZ> KFZListe = new List<KFZ>();        
+        private List<KFZ> _kFZListe = new List<KFZ>();
+        BackgroundWorker _bwt;
 
-        
         public KFZCollectionModel()
         {
-            //Tür auf! Füs das Event registrieren.
+            //Tür auf! Für das Event registrieren.
             Connection.KfzListeReady += Connection_KfzListeReady;
 
-            if(Connection.IsConnected)
-            {
-                GetAllKfz();
-            }
-            
         }
 
         private void Connection_KfzListeReady(List<KFZ> kfzs)
         {
-            KFZListe = kfzs;
+            _kFZListe = kfzs;
 
-            KFZDataArrived(KFZListe);
+            KFZDataArrived(_kFZListe);
         }
 
         public void GetAllKfz()
@@ -74,12 +72,71 @@ namespace BusinessLogic.Models
             Connection.DeleteKFZ(kfz);
         }
 
-        #region Private methods
+        public void StartAutoRefreshThread()
+        {
+            //async / await / Task... geht auch
+
+            //BackgroundWorker
+            _bwt = new BackgroundWorker();
+            _bwt.DoWork += _bwt_RefreshKFZs;
+            _bwt.WorkerSupportsCancellation = true;
+           
+            _bwt.RunWorkerAsync();
+        }
 
         
+        //Wird vom neuen Thread (_bwt) aufgerufen.
+        public void _bwt_RefreshKFZs(object sender, DoWorkEventArgs e) //Jetzt die Thread-Methode (blauer BwThread)
+        {
+            List<KFZ> neueListeAusDB = Connection.GetKfzList();
+            //List<KFZ> kfzneu = new List<KFZ>();
+            List<KFZ> kfznichtmehrdrin = new List<KFZ>();
 
-        
-        #endregion
+            while (true) //Endlosschleife des Threads
+            {
+                foreach (KFZ k in neueListeAusDB)
+                {
+                    if (!_kFZListe.Contains(k))
+                    {
+                        _kFZListe.Add(k);
+                        if (KFZNew != null)
+                            KFZNew(k); //Event feuern.
+                    }
+                }
+
+                foreach (KFZ k in _kFZListe)
+                {
+                    if (!neueListeAusDB.Contains(k))
+                    {
+                        //KFZ aus Liste entfernen
+                        int idx = _kFZListe.IndexOf(k);
+                        _kFZListe.RemoveAt(idx);
+
+                        if (KFZDeleted != null)
+                            KFZDeleted(k);
+                    }
+                }
+
+                foreach (KFZ k in _kFZListe)
+                {
+                    if (neueListeAusDB.Contains(k))
+                    {
+                        int i = neueListeAusDB.IndexOf(k);
+
+                        if (k.Typ != neueListeAusDB[i].Typ)
+                        {
+                            if (KFZChanged != null)
+                                KFZChanged(k);
+                        }
+
+                        //alle anderen Props auch checken...
+
+                    }
+                }
+
+                System.Threading.Thread.Sleep(5000);
+            }
+        }
 
     }
 }

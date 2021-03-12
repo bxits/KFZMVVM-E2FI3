@@ -45,7 +45,7 @@ namespace WpfApplication1.ViewModels
 
         }
 
-        public KFZDisplay(KFZ kfz)
+        public KFZDisplay(KFZ kfz) //Kaffee für Herrn Gentner
         {
             this.FahrgestNr = kfz.FahrgestNr;
             this.Id = kfz.Id;

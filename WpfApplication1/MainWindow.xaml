@@ -12,15 +12,12 @@
     </Window.DataContext>
     <Grid Margin="5">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"></ColumnDefinition>
-            <ColumnDefinition Width="1*"></ColumnDefinition>
+            <ColumnDefinition Width="2*"></ColumnDefinition>
             <ColumnDefinition Width="1*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="2*"></RowDefinition>
-            <RowDefinition Height="1*"></RowDefinition>
-            <RowDefinition Height="1*"></RowDefinition>
-            <RowDefinition Height="40"></RowDefinition>
+           
         </Grid.RowDefinitions>
 
         <ListBox Name="lbKFZ" ItemsSource="{Binding KFZObservableCollection}" SelectedItem="{Binding SelectedKFZ}" Grid.ColumnSpan="2" Grid.RowSpan="2">
@@ -28,21 +25,27 @@
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
                         <CheckBox x:Name="cbSelected" IsChecked="{Binding Selected, Mode=TwoWay}" />
-                        <TextBlock Text="{Binding PKennzeichen}"></TextBlock>
-                        <TextBlock Text="{Binding PTyp}" Margin="10,0,0,0"></TextBlock>
+                        <Label Content="{Binding PId}"></Label>
+                        <Label Content="{Binding PKennzeichen}"></Label>
+                        <Label Content="{Binding PTyp}"></Label>
+                        <Label Content="{Binding PLeistung}"></Label>
+                        <Label Content="{Binding PFahrgestNr}"></Label>
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
 
         <StackPanel Orientation="Vertical" Grid.Column="2">
+            <Label Content="{Binding SelectedKFZ.PId}"></Label>
             <TextBox Text="{Binding SelectedKFZ.PKennzeichen}"></TextBox>
             <TextBox Text="{Binding SelectedKFZ.PTyp}"></TextBox>
             <TextBox Text="{Binding SelectedKFZ.PLeistung}"></TextBox>
+            <TextBox Text="{Binding SelectedKFZ.PFahrgestNr}"></TextBox>
             <Button Content="Speichern" Command="{Binding AktualisierenCommand}"></Button>
             <Button Content="Ausgewählte löschen" Command="{Binding DeleteSelectedCommand}"></Button>
             <Button Content="Neu" Command="{Binding NewKfzCommand}"></Button>
             <Button Content="Daten holen" Command="{Binding DatenHolenCommand}"></Button>
+            <Button Content="Start Auto-Refresh" Command="{Binding StartAutoRefreshCommand}"></Button>
         </StackPanel>
 
        

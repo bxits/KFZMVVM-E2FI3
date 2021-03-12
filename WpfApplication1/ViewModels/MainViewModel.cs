@@ -9,6 +9,7 @@ using System.Windows.Input;
 using CommonTypes;
 using BusinessLogic.Models;
 using CommandHelper;
+using System.Windows;
 
 namespace WpfApplication1.ViewModels
 {
@@ -19,6 +20,7 @@ namespace WpfApplication1.ViewModels
         private ICommand _deleteSelectedCommand;
         private ICommand _newCommand;
         private ICommand _datenHolenCommand;
+        private ICommand _startAutoRefreshCommand;
 
         private void notifyPropertyChanged(string propname)
         {
@@ -37,12 +39,37 @@ namespace WpfApplication1.ViewModels
             _kfzm = new KFZCollectionModel();
 
             _kfzm.KFZDataArrived += _kfzm_KFZDataArrived;
+            _kfzm.KFZChanged += _kfzm_KFZChanged;
+            _kfzm.KFZDeleted += _kfzm_KFZDeleted;
+            _kfzm.KFZNew += _kfzm_KFZNew;
+        }
 
+        private void _kfzm_KFZNew(KFZ kfz) //Aufruf durch "blauen" Workerthread.
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                KFZDisplay kfzd = new KFZDisplay(kfz);
+                KFZObservableCollection.Add(kfzd);
+            },
+            System.Windows.Threading.DispatcherPriority.Normal);
             
+        }
+
+        private void _kfzm_KFZDeleted(KFZ kfz)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void _kfzm_KFZChanged(KFZ kfz)
+        {
+            throw new NotImplementedException();
         }
 
         private void _kfzm_KFZDataArrived(List<KFZ> kfzs)
         {
+            //Wenn Daten angekommen sind, dann erstmal die vorhandne Liste leeren...
+            KFZObservableCollection.Clear();
+
             foreach (KFZ kfz in kfzs)
             {
                 KFZDisplay kfzvm = new KFZDisplay(kfz);
@@ -150,6 +177,20 @@ namespace WpfApplication1.ViewModels
         private void HoleDaten()
         {
             _kfzm.GetAllKfz();
+        }
+
+        public ICommand StartAutoRefreshCommand
+        {
+            get
+            {
+                return _startAutoRefreshCommand = new RelayCommand(c => StartAutoRefreshKFZData());
+            }
+        }
+
+        private void StartAutoRefreshKFZData()
+        {
+            _kfzm.StartAutoRefreshThread();
+            //_kfzm.RefreshKFZs();
         }
 
         #endregion
