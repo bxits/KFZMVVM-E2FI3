@@ -31,9 +31,6 @@ namespace WpfApplication1.ViewModels
         public ObservableCollection<KFZDisplay> KFZObservableCollection { get; private set; } = new ObservableCollection<KFZDisplay>();
 
         #region Construction
-
-
-
         public MainViewModel()
         {
             _kfzm = new KFZCollectionModel();
@@ -52,7 +49,6 @@ namespace WpfApplication1.ViewModels
                 KFZObservableCollection.Add(kfzd);
             },
             System.Windows.Threading.DispatcherPriority.Normal);
-            
         }
 
         private void _kfzm_KFZDeleted(KFZ kfz)
@@ -67,9 +63,8 @@ namespace WpfApplication1.ViewModels
 
         private void _kfzm_KFZDataArrived(List<KFZ> kfzs)
         {
-            //Wenn Daten angekommen sind, dann erstmal die vorhandne Liste leeren...
+            // Wenn Daten angekommen sind, dann erstmal die vorhandne Liste leeren...
             KFZObservableCollection.Clear();
-
             foreach (KFZ kfz in kfzs)
             {
                 KFZDisplay kfzvm = new KFZDisplay(kfz);
@@ -79,7 +74,6 @@ namespace WpfApplication1.ViewModels
         #endregion
 
         #region Properties
-
         private KFZDisplay _selectedKFZ;
         public KFZDisplay SelectedKFZ
         {
@@ -90,13 +84,10 @@ namespace WpfApplication1.ViewModels
                 notifyPropertyChanged("SelectedKFZ");
             }
         }
-
         #endregion
 
         #region Commands
-
-
-        //Relais-Station
+        // Relais-Station
         public ICommand AktualisierenCommand
         {
             get
@@ -118,8 +109,6 @@ namespace WpfApplication1.ViewModels
             KFZDisplay kd = new KFZDisplay() { PId = -1, Selected = true };
             KFZObservableCollection.Add(kd);
             SelectedKFZ = kd;
-
-
         }
 
         public ICommand DeleteSelectedCommand
@@ -130,7 +119,7 @@ namespace WpfApplication1.ViewModels
             }
         }
 
-        //Wird von Oberfläche aufgerufen
+        // Wird von Oberfläche aufgerufen
         private void SaveKfz()
         {
             foreach (KFZDisplay kfzvm in KFZObservableCollection)
@@ -160,7 +149,7 @@ namespace WpfApplication1.ViewModels
             }
         }
 
-        //...an Command binden...
+        // ...an Command binden...
         private void ShowKfzDetails()
         {
 
@@ -192,10 +181,6 @@ namespace WpfApplication1.ViewModels
             _kfzm.StartAutoRefreshThread();
             //_kfzm.RefreshKFZs();
         }
-
         #endregion
-
     }
-
-
 }

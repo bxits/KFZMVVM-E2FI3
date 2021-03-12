@@ -19,11 +19,8 @@ namespace WpfApplication1.ViewModels
         }
 
         public long PId { get { return Id;} set { Id = value; } }
-
         public string PFahrgestNr { get { return FahrgestNr;} set { } }
-
         public string PKennzeichen { get { return Kennzeichen;} set { } }
-
         public int PLeistung { get { return Leistung;} set { } }
 
         public string PTyp
@@ -40,12 +37,9 @@ namespace WpfApplication1.ViewModels
             set { _selected = value; notifyPropertyChanged("Selected"); }
         }
 
-        public KFZDisplay() : base()
-        {
+        public KFZDisplay() : base() { }
 
-        }
-
-        public KFZDisplay(KFZ kfz) //Kaffee für Herrn Gentner
+        public KFZDisplay(KFZ kfz) // Kaffee für Herrn Gentner
         {
             this.FahrgestNr = kfz.FahrgestNr;
             this.Id = kfz.Id;

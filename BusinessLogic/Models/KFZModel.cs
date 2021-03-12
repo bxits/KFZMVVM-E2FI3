@@ -10,12 +10,6 @@ namespace BusinessLogic.Models
 {
     public class KFZModel : KFZ
     {
-
-        public KFZModel()
-        {
-
-        }
-
-        
+        public KFZModel() {}
     }
 }
