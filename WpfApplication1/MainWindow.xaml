@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:WpfApplication1"
         xmlns:ViewModels="clr-namespace:WpfApplication1.ViewModels"
         mc:Ignorable="d"
-        Title="MainWindow" Height="400" Width="400">
+        Title="MainWindow" Height="400" Width="550">
     <Window.DataContext>
         <ViewModels:MainViewModel x:Name="mvm"></ViewModels:MainViewModel>
     </Window.DataContext>
@@ -47,7 +47,5 @@
             <Button Content="Daten holen" Command="{Binding DatenHolenCommand}"></Button>
             <Button Content="Start Auto-Refresh" Command="{Binding StartAutoRefreshCommand}"></Button>
         </StackPanel>
-
-       
     </Grid>
 </Window>

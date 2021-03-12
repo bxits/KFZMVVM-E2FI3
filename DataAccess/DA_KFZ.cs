@@ -11,11 +11,7 @@ namespace DataAccess
 {
     public class DA_KFZ : KFZ
     {
-
-        public DA_KFZ():base()
-        {
-
-        }
+        public DA_KFZ() : base() {}
 
         public DA_KFZ(KFZ kfz) : base()
         {
@@ -38,24 +34,22 @@ namespace DataAccess
 
         internal void Insert()
         {
-            //TODO: Insert-SQL zum Einfügen der Instanz in die Datenbank
+            // TODO: Insert-SQL zum Einfügen der Instanz in die Datenbank
 
             //this.Id = Connection.Adapter.Adapter.Insert(sql);
         }
 
         internal void Update()
         {
-            //TODO: Update-SQL zum Ändern der Instanz in der Datenbank
+            // TODO: Update-SQL zum Ändern der Instanz in der Datenbank
             
-
             //Connection.Adapter.Adapter.ExecuteSQL(sql);
         }
 
         internal void Delete()
         {
-            //TODO: Insert-SQL zum Löschen der Instanz aus der Datenbank
+            // TODO: Insert-SQL zum Löschen der Instanz aus der Datenbank
             
-
             //Connection.Adapter.Adapter.ExecuteSQL(sql);
         }
     }

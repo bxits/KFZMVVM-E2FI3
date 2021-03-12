@@ -13,7 +13,7 @@ namespace BusinessLogic.Models
 {
     public class KFZCollectionModel
     {
-        //Event nach außen publizieren.
+        // Event nach außen publizieren.
         public event KFZDataArrivedEventHandler KFZDataArrived;
         public event KFZChangedEventHandler KFZChanged;
         public event KFZDeletedEventHandler KFZDeleted;
@@ -24,35 +24,37 @@ namespace BusinessLogic.Models
 
         public KFZCollectionModel()
         {
-            //Tür auf! Für das Event registrieren.
+            // Tür auf! Für das Event registrieren.
             Connection.KfzListeReady += Connection_KfzListeReady;
-
         }
 
         private void Connection_KfzListeReady(List<KFZ> kfzs)
         {
             _kFZListe = kfzs;
-
             KFZDataArrived(_kFZListe);
         }
 
         public void GetAllKfz()
         {
-            //Alle KFZ aus der Datenquelle abholen und in der Liste speichern:
+            // Alle KFZ aus der Datenquelle abholen und in der Liste speichern:
 
-            //jetzt über Events...
-            //this.KFZListe = Connection.GetKfzList();
+            // jetzt über Events...
+            // this.KFZListe = Connection.GetKfzList();
             Connection.GetKfzList();
         }
 
         public void Insert(KFZ kfz)
         {
-            //Überprüfen, ob das neue Kfz korrekte Werte besitzt.
-            if (kfz.Id == -1 &&
-                kfz.FahrgestNr != string.Empty &&
-                kfz.Kennzeichen != string.Empty &&
-                kfz.Leistung > 0
-                && kfz.Typ != string.Empty)
+            // Überprüfen, ob das neue Kfz korrekte Werte besitzt.
+            bool isValid = (
+                    kfz.Id == -1
+                    && kfz.FahrgestNr != string.Empty
+                    && kfz.Kennzeichen != string.Empty
+                    && kfz.Leistung > 0
+                    && kfz.Typ != string.Empty
+            );
+
+            if (isValid)
             {
                 Connection.InsertKFZ(kfz);
             }
@@ -65,18 +67,18 @@ namespace BusinessLogic.Models
 
         public void Delete(KFZ kfz)
         {
-            //1. KFZ abmelden bei Zulassungsstelle
-            //2. Fahrzeughalter benachrichtigen, dass KFZ abgemeldet wurde.
-            //3. auf Bestätigung des Halters warten
-            //4. usw.
+            // 1. KFZ abmelden bei Zulassungsstelle
+            // 2. Fahrzeughalter benachrichtigen, dass KFZ abgemeldet wurde.
+            // 3. auf Bestätigung des Halters warten
+            // 4. usw.
             Connection.DeleteKFZ(kfz);
         }
 
         public void StartAutoRefreshThread()
         {
-            //async / await / Task... geht auch
+            // async / await / Task... geht auch
 
-            //BackgroundWorker
+            // BackgroundWorker
             _bwt = new BackgroundWorker();
             _bwt.DoWork += _bwt_RefreshKFZs;
             _bwt.WorkerSupportsCancellation = true;
@@ -85,14 +87,14 @@ namespace BusinessLogic.Models
         }
 
         
-        //Wird vom neuen Thread (_bwt) aufgerufen.
+        // Wird vom neuen Thread (_bwt) aufgerufen.
         public void _bwt_RefreshKFZs(object sender, DoWorkEventArgs e) //Jetzt die Thread-Methode (blauer BwThread)
         {
             List<KFZ> neueListeAusDB = Connection.GetKfzList();
             //List<KFZ> kfzneu = new List<KFZ>();
             List<KFZ> kfznichtmehrdrin = new List<KFZ>();
 
-            while (true) //Endlosschleife des Threads
+            while (true) // Endlosschleife des Threads
             {
                 foreach (KFZ k in neueListeAusDB)
                 {
@@ -100,7 +102,7 @@ namespace BusinessLogic.Models
                     {
                         _kFZListe.Add(k);
                         if (KFZNew != null)
-                            KFZNew(k); //Event feuern.
+                            KFZNew(k); // Event feuern.
                     }
                 }
 
@@ -108,7 +110,7 @@ namespace BusinessLogic.Models
                 {
                     if (!neueListeAusDB.Contains(k))
                     {
-                        //KFZ aus Liste entfernen
+                        // KFZ aus Liste entfernen
                         int idx = _kFZListe.IndexOf(k);
                         _kFZListe.RemoveAt(idx);
 
@@ -128,15 +130,11 @@ namespace BusinessLogic.Models
                             if (KFZChanged != null)
                                 KFZChanged(k);
                         }
-
-                        //alle anderen Props auch checken...
-
+                        // alle anderen Props auch checken...
                     }
                 }
-
                 System.Threading.Thread.Sleep(5000);
             }
         }
-
     }
 }
