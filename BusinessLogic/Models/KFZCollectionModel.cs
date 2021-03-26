@@ -89,7 +89,6 @@ namespace BusinessLogic.Models
         public void _bwt_RefreshKFZs(object sender, DoWorkEventArgs e) //Jetzt die Thread-Methode (blauer BwThread)
         {
             List<KFZ> neueListeAusDB = Connection.GetKfzList();
-            //List<KFZ> kfzneu = new List<KFZ>();
             List<KFZ> kfznichtmehrdrin = new List<KFZ>();
 
             while (true) //Endlosschleife des Threads

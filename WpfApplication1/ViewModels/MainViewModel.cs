@@ -50,19 +50,30 @@ namespace WpfApplication1.ViewModels
             {
                 KFZDisplay kfzd = new KFZDisplay(kfz);
                 KFZObservableCollection.Add(kfzd);
-            },
+            }
+            ,
             System.Windows.Threading.DispatcherPriority.Normal);
             
         }
 
         private void _kfzm_KFZDeleted(KFZ kfz)
         {
-            throw new NotImplementedException();
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+               // throw new NotImplementedException();
+            }
+            ,
+            System.Windows.Threading.DispatcherPriority.Normal);
         }
 
         private void _kfzm_KFZChanged(KFZ kfz)
         {
-            throw new NotImplementedException();
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                // throw new NotImplementedException();
+            }
+             ,
+             System.Windows.Threading.DispatcherPriority.Normal);
         }
 
         private void _kfzm_KFZDataArrived(List<KFZ> kfzs)
